@@ -35,11 +35,11 @@ A self-hosted service that generates GitHub-style SVG activity graphs for [Codeb
 git clone https://github.com/YOUR_USERNAME/codeberg-activity-graph
 cd codeberg-activity-graph
 
-# 2. Install Vercel CLI (if you haven't)
-npm i -g vercel
+# 2. Install dependencies
+npm install
 
 # 3. Deploy
-vercel --prod
+npx vercel --prod
 ```
 
 Vercel will give you a URL like `https://codeberg-activity-xyz.vercel.app`.
@@ -102,7 +102,7 @@ GET /activity?user=<username>[&theme=<theme>]
 
 ```bash
 npm install
-npx vercel dev
+npm run dev
 # → http://localhost:3000/activity?user=YOUR_USERNAME
 ```
 
@@ -112,11 +112,12 @@ npx vercel dev
 
 ```
 codeberg-activity-graph/
-├── api/
-│   └── activity.js     ← Serverless function (the whole app)
-├── public/
-│   └── index.html      ← Demo/preview page
-├── vercel.json         ← Routing config
+├── app/
+│   ├── activity/
+│   │   └── route.js     ← SVG route handler
+│   ├── globals.css      ← Global styles
+│   ├── layout.js        ← Root layout
+│   └── page.jsx         ← Demo/preview page
 └── package.json
 ```
 

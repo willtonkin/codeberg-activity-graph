@@ -1,5 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/activity", "destination": "/api/activity" }
-  ]
-}
