@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Codeberg Activity Graph</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #1e1e2e;
+      --surface: #181825;
+      --border: #313244;
+      --text: #cdd6f4;
+      --subtext: #a6adc8;
+      --orange: #e8733a;
+      --orange-light: #f5a06e;
+      --green: #a6e3a1;
+      --red: #f38ba8;
+      --radius: 10px;
+      --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 20px;
+      gap: 40px;
+    }
+
+    header { text-align: center; }
+    header h1 { font-size: 2rem; font-weight: 700; color: var(--orange-light); }
+    header p { color: var(--subtext); margin-top: 8px; font-size: 1rem; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 100%;
+      max-width: 720px;
+    }
+
+    .card h2 { font-size: 1rem; font-weight: 600; color: var(--subtext); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px; }
+
+    /* Demo form */
+    .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    input[type="text"], select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.95rem;
+      padding: 8px 12px;
+      outline: none;
+      transition: border-color .15s;
+    }
+    input[type="text"] { flex: 1; min-width: 150px; }
+    input[type="text"]:focus, select:focus { border-color: var(--orange); }
+    button {
+      background: var(--orange);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 8px 20px;
+      transition: background .15s;
+    }
+    button:hover { background: var(--orange-light); }
+
+    /* Preview */
+    #preview { margin-top: 20px; min-height: 80px; display: flex; align-items: center; justify-content: center; }
+    #preview img { max-width: 100%; border-radius: 8px; }
+    #preview .placeholder { color: var(--subtext); font-size: 0.9rem; }
+
+    /* Snippet */
+    .snippet {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      padding: 14px 16px;
+      overflow-x: auto;
+      white-space: pre;
+      color: var(--orange-light);
+      position: relative;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 8px; right: 8px;
+      background: var(--border);
+      border: none;
+      border-radius: 4px;
+      color: var(--subtext);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 4px 10px;
+    }
+    .copy-btn:hover { background: var(--orange); color: #fff; }
+
+    /* Theme pills */
+    .themes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    .theme-pill {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      padding: 4px 14px;
+      background: transparent;
+      color: var(--subtext);
+      transition: all .15s;
+    }
+    .theme-pill.active, .theme-pill:hover { border-color: var(--orange); color: var(--orange-light); }
+
+    /* Docs table */
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th { text-align: left; color: var(--subtext); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+    td { padding: 8px 8px; border-bottom: 1px solid var(--border); color: var(--text); }
+    td:first-child { font-family: var(--mono); color: var(--orange-light); font-size: 0.82rem; }
+    td:last-child { color: var(--subtext); font-size: 0.85rem; }
+    tr:last-child td { border-bottom: none; }
+
+    footer { color: var(--subtext); font-size: 0.82rem; text-align: center; }
+    a { color: var(--orange-light); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🔥 Codeberg Activity Graph</h1>
+  <p>Embed your Codeberg contribution graph anywhere — GitHub READMEs, websites, portfolios.</p>
+</header>
+
+<!-- Live demo -->
+<div class="card">
+  <h2>Try it</h2>
+  <div class="form-row">
+    <input type="text" id="usernameInput" placeholder="Codeberg username" value=""/>
+    <button onclick="loadPreview()">Generate</button>
+  </div>
+  <div class="themes" id="themePills"></div>
+  <div id="preview"><span class="placeholder">Enter a username above to preview your graph</span></div>
+</div>
+
+<!-- Embed snippets -->
+<div class="card">
+  <h2>Embed in your GitHub README</h2>
+  <div class="snippet" id="markdownSnippet">![Codeberg Activity](https://your-deployment.vercel.app/activity?user=USERNAME)</div>
+
+  <h2 style="margin-top:20px;">HTML embed</h2>
+  <div class="snippet" id="htmlSnippet" style="position:relative">
+&lt;img src="https://your-deployment.vercel.app/activity?user=USERNAME" alt="Codeberg Activity"/&gt;
+    <button class="copy-btn" onclick="copySnippet('htmlSnippet')">Copy</button>
+  </div>
+</div>
+
+<!-- Params reference -->
+<div class="card">
+  <h2>Parameters</h2>
+  <table>
+    <tr><th>Parameter</th><th>Values</th><th>Description</th></tr>
+    <tr><td>?user=</td><td>any Codeberg username</td><td>Required. The Codeberg account to graph.</td></tr>
+    <tr>
+      <td>?theme=</td>
+      <td>codeberg · codeberg_light · github · github_light</td>
+      <td>Visual theme. Defaults to <code>codeberg</code>.</td>
+    </tr>
+  </table>
+</div>
+
+<footer>
+  Powered by the <a href="https://codeberg.org/api/swagger" target="_blank">Gitea API</a> ·
+  Data refreshes every hour · Open source
+</footer>
+
+<script>
+  const THEMES = ['codeberg', 'codeberg_light', 'github', 'github_light'];
+  let currentTheme = 'codeberg';
+
+  // Render theme pills
+  const pillsEl = document.getElementById('themePills');
+  THEMES.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'theme-pill' + (t === currentTheme ? ' active' : '');
+    btn.textContent = t.replace('_', ' ');
+    btn.onclick = () => {
+      currentTheme = t;
+      document.querySelectorAll('.theme-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadPreview();
+    };
+    pillsEl.appendChild(btn);
+  });
+
+  function getBaseUrl() {
+    return window.location.origin;
+  }
+
+  function loadPreview() {
+    const user = document.getElementById('usernameInput').value.trim();
+    if (!user) return;
+
+    const url = `${getBaseUrl()}/activity?user=${encodeURIComponent(user)}&theme=${currentTheme}`;
+    const preview = document.getElementById('preview');
+    preview.innerHTML = `<span class="placeholder">Loading…</span>`;
+
+    const img = new Image();
+    img.onload = () => { preview.innerHTML = ''; preview.appendChild(img); updateSnippets(user); };
+    img.onerror = () => { preview.innerHTML = `<span class="placeholder" style="color:#f38ba8">Error loading graph — check the username.</span>`; };
+    img.src = url;
+    img.alt = `${user}'s Codeberg activity`;
+    img.style.maxWidth = '100%';
+  }
+
+  function updateSnippets(user) {
+    const base = 'https://your-deployment.vercel.app';
+    const url = `${base}/activity?user=${user}&theme=${currentTheme}`;
+    document.getElementById('markdownSnippet').textContent =
+      `![Codeberg Activity](${url})`;
+    document.getElementById('htmlSnippet').innerHTML =
+      `&lt;img src="${url}" alt="${user}'s Codeberg Activity"/&gt;
+    <button class="copy-btn" onclick="copySnippet('htmlSnippet')">Copy</button>`;
+  }
+
+  function copySnippet(id) {
+    const el = document.getElementById(id);
+    const text = el.innerText.replace('Copy', '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = el.querySelector('.copy-btn');
+      if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 1500); }
+    });
+  }
+
+  // Allow Enter key in input
+  document.getElementById('usernameInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') loadPreview();
+  });
+</script>
+</body>
+</html>

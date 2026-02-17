@@ -1,0 +1,15 @@
+{
+  "name": "codeberg-activity-graph",
+  "version": "1.0.0",
+  "description": "GitHub-style activity graph for Codeberg users, served as SVG",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "devDependencies": {
+    "vercel": "^37.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
