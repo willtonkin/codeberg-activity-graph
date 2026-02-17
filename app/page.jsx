@@ -17,8 +17,24 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setBaseUrl(window.location.origin);
+      const urlUser = new URLSearchParams(window.location.search).get('user');
+      if (urlUser) {
+        setUsername(urlUser);
+        setSubmittedUser(urlUser.trim());
+      }
     }
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    if (username) {
+      url.searchParams.set('user', username);
+    } else {
+      url.searchParams.delete('user');
+    }
+    window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+  }, [username]);
 
   useEffect(() => {
     if (!submittedUser) return;
