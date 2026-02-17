@@ -1,6 +1,11 @@
 # 🔥 Codeberg Activity Graph
 
-A self-hosted service that generates GitHub-style SVG activity graphs for [Codeberg](https://codeberg.org) users — perfect for embedding in GitHub READMEs, personal sites, or portfolios.
+🚀 **Try the live app now:** `https://codeberg-activity-graph.vercel.app/` ✨  
+Instant SVGs. No setup. Just paste and go.
+
+Public repo: https://github.com/willtonkin/codeberg-activity-graph
+
+A Next.js app that generates GitHub-style SVG activity graphs for [Codeberg](https://codeberg.org) users — perfect for embedding in GitHub READMEs, personal sites, or portfolios.
 
 ## Features
 
@@ -20,29 +25,35 @@ A self-hosted service that generates GitHub-style SVG activity graphs for [Codeb
 | `github` | Green on dark (GitHub-style) |
 | `github_light` | Green on white |
 
+## Demo images
+
+![Codeberg Activity — codeberg](https://codeberg-activity-graph.vercel.app/activity?user=willtonkin&theme=codeberg)
+![Codeberg Activity — codeberg_light](https://codeberg-activity-graph.vercel.app/activity?user=willtonkin&theme=codeberg_light)
+![Codeberg Activity — github](https://codeberg-activity-graph.vercel.app/activity?user=willtonkin&theme=github)
+![Codeberg Activity — github_light](https://codeberg-activity-graph.vercel.app/activity?user=willtonkin&theme=github_light)
+
 ---
 
-## Deploy to Vercel (5 minutes)
+## Deploy
 
-### Option A — One-click
+### Option A — Vercel (one-click)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/codeberg-activity-graph)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/willtonkin/codeberg-activity-graph)
 
-### Option B — CLI
+### Option B — CLI (any Next.js host)
 
 ```bash
-# 1. Clone / download this repo
-git clone https://github.com/YOUR_USERNAME/codeberg-activity-graph
+# 1. Clone the repo
+git clone https://github.com/willtonkin/codeberg-activity-graph
 cd codeberg-activity-graph
 
 # 2. Install dependencies
 npm install
 
-# 3. Deploy
-npx vercel --prod
+# 3. Build + run
+npm run build
+npm start
 ```
-
-Vercel will give you a URL like `https://codeberg-activity-xyz.vercel.app`.
 
 ---
 
@@ -114,7 +125,7 @@ npm run dev
 codeberg-activity-graph/
 ├── app/
 │   ├── activity/
-│   │   └── route.js     ← SVG route handler
+│   │   └── route.js     ← Next.js App Router SVG route
 │   ├── globals.css      ← Global styles
 │   ├── layout.js        ← Root layout
 │   └── page.jsx         ← Demo/preview page
